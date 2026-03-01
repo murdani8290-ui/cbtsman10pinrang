@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CBT Online">
+  <meta name="theme-color" id="metaThemeColor" content="#0ea5e9">
+  <title>CBT Online</title>
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Round">
+
+  <style>
+    /* ============================================
+       CSS VARIABLES - TEMA
+    ============================================ */
+    :root {
+      --accent: #0ea5e9;
+      --accent-dark: #0284c7;
+      --accent-glow: rgba(14,165,233,0.5);
+      --accent-soft: rgba(14,165,233,0.12);
+      --bg: #020617;
+      --bg2: #0b1120;
+      --card: rgba(15,23,42,0.95);
+      --border: rgba(14,165,233,0.3);
+      --text: #e5f6ff;
+      --text-muted: rgba(186,230,253,0.7);
+      --font: 'Outfit', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    /* TEMA HIJAU */
+    [data-theme="green"] {
+      --accent: #10b981;
+      --accent-dark: #059669;
+      --accent-glow: rgba(16,185,129,0.5);
+      --accent-soft: rgba(16,185,129,0.12);
+      --border: rgba(16,185,129,0.3);
+      --text: #ecfdf5;
+      --text-muted: rgba(167,243,208,0.7);
+    }
+
+    /* TEMA UNGU */
+    [data-theme="purple"] {
+      --accent: #8b5cf6;
+      --accent-dark: #7c3aed;
+      --accent-glow: rgba(139,92,246,0.5);
+      --accent-soft: rgba(139,92,246,0.12);
+      --border: rgba(139,92,246,0.3);
+      --text: #f5f3ff;
+      --text-muted: rgba(221,214,254,0.7);
+    }
+
+    /* TEMA ROSE */
+    [data-theme="rose"] {
+      --accent: #f43f5e;
+      --accent-dark: #e11d48;
+      --accent-glow: rgba(244,63,94,0.5);
+      --accent-soft: rgba(244,63,94,0.12);
+      --border: rgba(244,63,94,0.3);
+      --text: #fff1f2;
+      --text-muted: rgba(253,164,175,0.7);
+    }
+
+    /* TEMA AMBER */
+    [data-theme="amber"] {
+      --accent: #f59e0b;
+      --accent-dark: #d97706;
+      --accent-glow: rgba(245,158,11,0.5);
+      --accent-soft: rgba(245,158,11,0.12);
+      --border: rgba(245,158,11,0.3);
+      --text: #fffbeb;
+      --text-muted: rgba(253,230,138,0.7);
+    }
+
+    /* TEMA CYAN */
+    [data-theme="cyan"] {
+      --accent: #06b6d4;
+      --accent-dark: #0891b2;
+      --accent-glow: rgba(6,182,212,0.5);
+      --accent-soft: rgba(6,182,212,0.12);
+      --border: rgba(6,182,212,0.3);
+      --text: #ecfeff;
+      --text-muted: rgba(165,243,252,0.7);
+    }
+
+    /* ============================================
+       BASE
+    ============================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+
+    /* ============================================
+       ANIMATED BACKGROUND
+    ============================================ */
+    .bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .bg-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      animation: orbFloat 12s ease-in-out infinite;
+    }
+
+    .bg-orb-1 {
+      width: 400px; height: 400px;
+      background: var(--accent);
+      top: -100px; left: -100px;
+      animation-delay: 0s;
+    }
+
+    .bg-orb-2 {
+      width: 300px; height: 300px;
+      background: var(--accent-dark);
+      bottom: -80px; right: -80px;
+      animation-delay: -4s;
+    }
+
+    .bg-orb-3 {
+      width: 200px; height: 200px;
+      background: var(--accent);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      animation-delay: -8s;
+    }
+
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 40px 40px;
+      opacity: 0.3;
+    }
+
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -20px) scale(1.1); }
+      66% { transform: translate(-20px, 30px) scale(0.9); }
+    }
+
+    /* ============================================
+       MAIN CARD
+    ============================================ */
+    .app-wrapper {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 400px;
+      padding: 16px;
+    }
+
+    @media (max-width: 600px) and (orientation: portrait) {
+      .app-wrapper {
+        max-width: 100%;
+        padding: 12px;
+        height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 28px 24px;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.03),
+        0 0 40px var(--accent-glow),
+        0 0 80px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      backdrop-filter: blur(24px);
+      position: relative;
+      overflow: hidden;
+      animation: cardIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(30px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.6;
+    }
+
+    /* ============================================
+       HEADER
+    ============================================ */
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .logo-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      background: var(--accent-soft);
+      border: 1px solid var(--border);
+      margin-bottom: 14px;
+      box-shadow: 0 0 20px var(--accent-glow);
+      animation: logoPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes logoPulse {
+      0%, 100% { box-shadow: 0 0 20px var(--accent-glow); }
+      50% { box-shadow: 0 0 35px var(--accent-glow), 0 0 60px var(--accent-glow); }
+    }
+
+    .logo-wrap .material-icons-round {
+      font-size: 32px;
+      color: var(--accent);
+    }
+
+    .app-title {
+      font-size: 1.6rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      line-height: 1.1;
+    }
+
+    .app-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 400;
+    }
+
+    /* ============================================
+       GAS URL INPUT
+    ============================================ */
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .section-label .material-icons-round { font-size: 14px; }
+
+    .input-wrap {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .url-input {
+      width: 100%;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 16px 12px 42px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      outline: none;
+      transition: all 0.2s;
+      word-break: break-all;
+    }
+
+    .url-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    .url-input::placeholder {
+      color: var(--text-muted);
+      font-family: var(--font);
+      font-size: 0.75rem;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 18px;
+    }
+
+    .url-hint {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+      padding-left: 4px;
+      line-height: 1.5;
+    }
+
+    /* ============================================
+       THEME SELECTOR
+    ============================================ */
+    .theme-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .theme-dot {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .theme-dot:hover { transform: scale(1.15); }
+
+    .theme-dot.active {
+      border-color: white;
+      transform: scale(1.2);
+      box-shadow: 0 0 12px currentColor;
+    }
+
+    .theme-dot.active::after {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+    }
+
+    .dot-blue   { background: #0ea5e9; }
+    .dot-green  { background: #10b981; }
+    .dot-purple { background: #8b5cf6; }
+    .dot-rose   { background: #f43f5e; }
+    .dot-amber  { background: #f59e0b; }
+    .dot-cyan   { background: #06b6d4; }
+
+    /* ============================================
+       STATUS BADGE
+    ============================================ */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 20px;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #64748b;
+      flex-shrink: 0;
+      transition: all 0.3s;
+    }
+
+    .status-dot.online  { background: #10b981; box-shadow: 0 0 8px #10b981; animation: blink 2s infinite; }
+    .status-dot.offline { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ============================================
+       BUTTONS
+    ============================================ */
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      border: none;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      color: #020617;
+      font-family: var(--font);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 20px var(--accent-glow);
+      letter-spacing: 0.02em;
+      margin-bottom: 10px;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px var(--accent-glow);
+    }
+
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--font);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-secondary:hover {
+      background: var(--accent-soft);
+      color: var(--text);
+      border-color: var(--accent);
+    }
+
+    /* ============================================
+       INSTALL BANNER
+    ============================================ */
+    .install-banner {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: var(--accent-soft);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin-top: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .install-banner:hover { background: rgba(var(--accent), 0.2); }
+    .install-banner.show { display: flex; }
+
+    .install-banner .material-icons-round { color: var(--accent); font-size: 22px; flex-shrink: 0; }
+
+    .install-text { flex: 1; }
+    .install-text strong { display: block; font-size: 0.78rem; color: var(--text); }
+    .install-text span { font-size: 0.68rem; color: var(--text-muted); }
+
+    /* ============================================
+       TOAST NOTIFICATION
+    ============================================ */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: rgba(15,23,42,0.95);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      z-index: 100;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      white-space: nowrap;
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast .material-icons-round { font-size: 18px; color: var(--accent); }
+
+    /* ============================================
+       FOOTER
+    ============================================ */
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    /* ============================================
+       LOADING OVERLAY
+    ============================================ */
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 200;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .loading-overlay.show { display: flex; }
+
+    .spinner {
+      width: 48px; height: 48px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+    /* ============================================
+       DIVIDER
+    ============================================ */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 16px 0;
+      color: var(--text-muted);
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Animated Background -->
+  <div class="bg-canvas">
+    <div class="bg-grid"></div>
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <p class="loading-text">Membuka CBT Online...</p>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span class="material-icons-round">info</span>
+    <span id="toastMsg">Pesan</span>
+  </div>
+
+  <!-- Main Card -->
+  <div class="app-wrapper">
+    <div class="card">
+
+      <!-- Header -->
+      <div class="header">
+        <div class="logo-wrap">
+          <span class="material-icons-round">school</span>
+        </div>
+        <h1 class="app-title">CBT Online</h1>
+        <p class="app-subtitle">Computer Based Test • Sistem Ujian Online</p>
+      </div>
+
+      <!-- Status -->
+      <div class="status-bar">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Memeriksa koneksi...</span>
+      </div>
+
+      <!-- GAS URL -->
+      <div class="section-label">
+        <span class="material-icons-round">link</span>
+        URL Google Apps Script
+      </div>
+      <div class="input-wrap">
+        <span class="material-icons-round input-icon">language</span>
+        <input
+          type="url"
+          class="url-input"
+          id="gasUrl"
+          placeholder="Tempel URL GAS Anda di sini..."
+          autocomplete="off"
+          spellcheck="false"
+        >
+      </div>
+      <p class="url-hint">
+        💡 Dapatkan URL dari: Google Apps Script → Deploy → Manage deployments → URL
+      </p>
+
+      <div class="divider">Pilih Tema Warna</div>
+
+      <!-- Theme Selector -->
+      <div class="section-label">
+        <span class="material-icons-round">palette</span>
+        Tema Warna
+      </div>
+      <div class="theme-grid">
+        <div class="theme-dot dot-blue active"   data-theme=""       title="Biru"   onclick="setTheme('', this, '#0ea5e9')"></div>
+        <div class="theme-dot dot-green"          data-theme="green"  title="Hijau"  onclick="setTheme('green', this, '#10b981')"></div>
+        <div class="theme-dot dot-purple"         data-theme="purple" title="Ungu"   onclick="setTheme('purple', this, '#8b5cf6')"></div>
+        <div class="theme-dot dot-rose"           data-theme="rose"   title="Rose"   onclick="setTheme('rose', this, '#f43f5e')"></div>
+        <div class="theme-dot dot-amber"          data-theme="amber"  title="Amber"  onclick="setTheme('amber', this, '#f59e0b')"></div>
+        <div class="theme-dot dot-cyan"           data-theme="cyan"   title="Cyan"   onclick="setTheme('cyan', this, '#06b6d4')"></div>
+      </div>
+
+      <!-- Buttons -->
+      <button class="btn-primary" id="btnMasuk" onclick="bukaCBT()">
+        <span class="material-icons-round">play_arrow</span>
+        Mulai CBT
+      </button>
+
+      <button class="btn-secondary" onclick="simpanUrl()">
+        <span class="material-icons-round">save</span>
+        Simpan URL
+      </button>
+
+      <!-- Install Banner -->
+      <div class="install-banner" id="installBanner" onclick="installPWA()">
+        <span class="material-icons-round">install_mobile</span>
+        <div class="install-text">
+          <strong>Install ke Homescreen</strong>
+          <span>Akses lebih cepat seperti aplikasi native</span>
+        </div>
+        <span class="material-icons-round" style="color:var(--text-muted);font-size:18px">chevron_right</span>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        CBT Online PWA &copy; <span id="yr"></span> • 
+        <span id="pwaStatus">Versi Web</span>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // =============================================
+    // INISIALISASI
+    // =============================================
+    document.getElementById('yr').textContent = new Date().getFullYear();
+
+    // Load saved data
+    const savedUrl   = localStorage.getItem('cbt_gas_url') || '';
+    const savedTheme = localStorage.getItem('cbt_theme') || '';
+    const savedColor = localStorage.getItem('cbt_theme_color') || '#0ea5e9';
+
+    if (savedUrl) document.getElementById('gasUrl').value = savedUrl;
+
+    // Apply saved theme
+    if (savedTheme !== null) {
+      applyTheme(savedTheme, savedColor);
+      document.querySelectorAll('.theme-dot').forEach(d => {
+        d.classList.toggle('active', d.dataset.theme === savedTheme);
+      });
+    }
+
+    // =============================================
+    // CEK STATUS ONLINE
+    // =============================================
+    function updateOnlineStatus() {
+      const dot  = document.getElementById('statusDot');
+      const text = document.getElementById('statusText');
+      if (navigator.onLine) {
+        dot.className = 'status-dot online';
+        text.textContent = 'Terhubung ke internet';
+      } else {
+        dot.className = 'status-dot offline';
+        text.textContent = 'Tidak ada koneksi internet';
+      }
+    }
+
+    updateOnlineStatus();
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+
+    // =============================================
+    // THEME SELECTOR
+    // =============================================
+    function setTheme(theme, el, color) {
+      document.querySelectorAll('.theme-dot').forEach(d => d.classList.remove('active'));
+      el.classList.add('active');
+      applyTheme(theme, color);
+      localStorage.setItem('cbt_theme', theme);
+      localStorage.setItem('cbt_theme_color', color);
+      showToast('Tema berhasil diubah');
+    }
+
+    function applyTheme(theme, color) {
+      document.documentElement.setAttribute('data-theme', theme);
+      document.getElementById('metaThemeColor').setAttribute('content', color);
+      // Update manifest theme_color dinamis
+      const link = document.querySelector('link[rel="manifest"]');
+      if (link) {
+        // Buat manifest blob dinamis
+        fetch('manifest.json')
+          .then(r => r.json())
+          .then(manifest => {
+            manifest.theme_color = color;
+            const blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+            link.href = URL.createObjectURL(blob);
+          }).catch(() => {});
+      }
+    }
+
+    // =============================================
+    // SIMPAN URL
+    // =============================================
+    function simpanUrl() {
+      const url = document.getElementById('gasUrl').value.trim();
+      if (!url) { showToast('URL tidak boleh kosong', 'warning'); return; }
+      if (!url.startsWith('https://script.google.com')) {
+        showToast('URL harus dari script.google.com', 'error'); return;
+      }
+      localStorage.setItem('cbt_gas_url', url);
+      showToast('URL berhasil disimpan ✓', 'success');
+    }
+
+    // =============================================
+    // BUKA CBT
+    // =============================================
+    function bukaCBT() {
+      const url = document.getElementById('gasUrl').value.trim();
+
+      if (!url) {
+        showToast('Isi URL GAS terlebih dahulu!', 'error');
+        document.getElementById('gasUrl').focus();
+        return;
+      }
+
+      if (!url.startsWith('https://script.google.com')) {
+        showToast('URL tidak valid. Gunakan URL dari GAS.', 'error');
+        return;
+      }
+
+      if (!navigator.onLine) {
+        showToast('Tidak ada koneksi internet!', 'error');
+        return;
+      }
+
+      // Simpan otomatis
+      localStorage.setItem('cbt_gas_url', url);
+
+      // Tampilkan loading
+      document.getElementById('loadingOverlay').classList.add('show');
+
+      // Redirect ke GAS
+      setTimeout(() => {
+        window.location.href = url + '?page=Index';
+      }, 800);
+    }
+
+    // =============================================
+    // TOAST NOTIFICATION
+    // =============================================
+    let toastTimer = null;
+    function showToast(msg, type = 'info') {
+      const toast = document.getElementById('toast');
+      const icon  = toast.querySelector('.material-icons-round');
+      document.getElementById('toastMsg').textContent = msg;
+
+      const icons = { info: 'info', success: 'check_circle', error: 'error', warning: 'warning' };
+      icon.textContent = icons[type] || 'info';
+
+      toast.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // =============================================
+    // PWA INSTALL
+    // =============================================
+    let deferredPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('installBanner').classList.add('show');
+    });
+
+    function installPWA() {
+      if (!deferredPrompt) {
+        showToast('Sudah terinstall atau tidak didukung browser ini');
+        return;
+      }
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(result => {
+        if (result.outcome === 'accepted') {
+          showToast('CBT Online berhasil diinstall! 🎉', 'success');
+          document.getElementById('installBanner').classList.remove('show');
+        }
+        deferredPrompt = null;
+      });
+    }
+
+    window.addEventListener('appinstalled', () => {
+      document.getElementById('pwaStatus').textContent = 'Terinstall ✓';
+      document.getElementById('installBanner').classList.remove('show');
+      showToast('Aplikasi berinstall!', 'success');
+    });
+
+    // Cek apakah sudah berjalan sebagai PWA
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+      document.getElementById('pwaStatus').textContent = 'Mode Aplikasi ✓';
+    }
+
+    // =============================================
+    // SERVICE WORKER
+    // =============================================
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(() => console.log('SW registered'))
+          .catch(err => console.warn('SW failed:', err));
+      });
+    }
+
+    // Enter key pada input URL
+    document.getElementById('gasUrl').addEventListener('keydown', e => {
+      if (e.key === 'Enter') bukaCBT();
+    });
+  </script>
+</body>
+</html>
