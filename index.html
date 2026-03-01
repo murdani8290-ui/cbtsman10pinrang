@@ -642,8 +642,8 @@
 
       <!-- Status -->
       <div class="status-bar">
-        <div class="status-dot" id="statusDot"></div>
-        <span id="statusText">Memeriksa koneksi...</span>
+        <div class="status-dot online" id="statusDot"></div>
+        <span id="statusText">Terhubung ke internet</span>
       </div>
 
       <!-- GAS URL tersembunyi -->
@@ -729,9 +729,31 @@
       }
     }
 
-    updateOnlineStatus();
+    // Jalankan langsung saat halaman dimuat
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', updateOnlineStatus);
+    } else {
+      updateOnlineStatus();
+    }
+
+    // Update saat status berubah
     window.addEventListener('online', updateOnlineStatus);
     window.addEventListener('offline', updateOnlineStatus);
+
+    // Ping berkala setiap 5 detik untuk pastikan status akurat
+    setInterval(() => {
+      const dot  = document.getElementById('statusDot');
+      const text = document.getElementById('statusText');
+      fetch('./manifest.json', { method: 'HEAD', cache: 'no-cache' })
+        .then(() => {
+          dot.className = 'status-dot online';
+          text.textContent = 'Terhubung ke internet';
+        })
+        .catch(() => {
+          dot.className = 'status-dot offline';
+          text.textContent = 'Tidak ada koneksi internet';
+        });
+    }, 5000);
 
     // =============================================
     // THEME SELECTOR
