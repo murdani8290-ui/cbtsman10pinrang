@@ -3,18 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, user-scalable=no">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="CBT Online">
   <meta name="theme-color" id="metaThemeColor" content="#0ea5e9">
   <title>CBT Online</title>
 
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
 
-  <!-- Apple Touch Icons -->
+  <!-- Android Chrome install hints -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="CBT Online">
+
+  <!-- Apple iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CBT Online">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
+
+  <!-- Microsoft -->
+  <meta name="msapplication-TileImage" content="icons/icon-192.png">
+  <meta name="msapplication-TileColor" content="#020617">
+
+  <!-- Apple Touch Icons -->
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -675,8 +685,8 @@
 
       <!-- Footer -->
       <div class="footer">
-        CBT Online PWA &copy; <span id="yr"></span> • 
-        <span id="pwaStatus">Versi Web</span>
+        Dikembangkan oleh <strong style="color:var(--accent)">Murdani</strong> &copy; 2025<br>
+        <span id="pwaStatus" style="font-size:0.6rem;opacity:0.5">Versi Web</span>
       </div>
 
     </div>
