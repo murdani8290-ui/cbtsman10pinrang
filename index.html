@@ -636,25 +636,8 @@
         <span id="statusText">Memeriksa koneksi...</span>
       </div>
 
-      <!-- GAS URL -->
-      <div class="section-label">
-        <span class="material-icons-round">link</span>
-        URL Google Apps Script
-      </div>
-      <div class="input-wrap">
-        <span class="material-icons-round input-icon">language</span>
-        <input
-          type="url"
-          class="url-input"
-          id="gasUrl"
-          placeholder="Tempel URL GAS Anda di sini..."
-          autocomplete="off"
-          spellcheck="false"
-        >
-      </div>
-      <p class="url-hint">
-        💡 Dapatkan URL dari: Google Apps Script → Deploy → Manage deployments → URL
-      </p>
+      <!-- GAS URL tersembunyi -->
+      <input type="hidden" id="gasUrl" value="">
 
       <div class="divider">Pilih Tema Warna</div>
 
@@ -678,10 +661,7 @@
         Mulai CBT
       </button>
 
-      <button class="btn-secondary" onclick="simpanUrl()">
-        <span class="material-icons-round">save</span>
-        Simpan URL
-      </button>
+
 
       <!-- Install Banner -->
       <div class="install-banner" id="installBanner" onclick="installPWA()">
@@ -709,11 +689,12 @@
     document.getElementById('yr').textContent = new Date().getFullYear();
 
     // Load saved data
-    const savedUrl   = localStorage.getItem('cbt_gas_url') || '';
+    const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbzZK-nhRLigUP42gKx6bwEDvkHK8zvOEJmrmhsVu1lsb4R2UheC6o-O7rqYaXxwwAqrhA/exec';
+    const savedUrl   = localStorage.getItem('cbt_gas_url') || DEFAULT_GAS_URL;
     const savedTheme = localStorage.getItem('cbt_theme') || '';
     const savedColor = localStorage.getItem('cbt_theme_color') || '#0ea5e9';
 
-    if (savedUrl) document.getElementById('gasUrl').value = savedUrl;
+    document.getElementById('gasUrl').value = DEFAULT_GAS_URL;
 
     // Apply saved theme
     if (savedTheme !== null) {
@@ -772,49 +753,27 @@
     }
 
     // =============================================
-    // SIMPAN URL
+    // SIMPAN URL (internal only)
     // =============================================
     function simpanUrl() {
-      const url = document.getElementById('gasUrl').value.trim();
-      if (!url) { showToast('URL tidak boleh kosong', 'warning'); return; }
-      if (!url.startsWith('https://script.google.com')) {
-        showToast('URL harus dari script.google.com', 'error'); return;
-      }
-      localStorage.setItem('cbt_gas_url', url);
-      showToast('URL berhasil disimpan ✓', 'success');
+      // URL sudah tertanam, fungsi ini tidak diperlukan
     }
 
     // =============================================
     // BUKA CBT
     // =============================================
     function bukaCBT() {
-      const url = document.getElementById('gasUrl').value.trim();
-
-      if (!url) {
-        showToast('Isi URL GAS terlebih dahulu!', 'error');
-        document.getElementById('gasUrl').focus();
-        return;
-      }
-
-      if (!url.startsWith('https://script.google.com')) {
-        showToast('URL tidak valid. Gunakan URL dari GAS.', 'error');
-        return;
-      }
-
       if (!navigator.onLine) {
         showToast('Tidak ada koneksi internet!', 'error');
         return;
       }
 
-      // Simpan otomatis
-      localStorage.setItem('cbt_gas_url', url);
-
       // Tampilkan loading
       document.getElementById('loadingOverlay').classList.add('show');
 
-      // Redirect ke GAS
+      // Redirect langsung ke GAS
       setTimeout(() => {
-        window.location.href = url + '?page=Index';
+        window.location.href = DEFAULT_GAS_URL + '?page=Index';
       }, 800);
     }
 
@@ -883,10 +842,7 @@
       });
     }
 
-    // Enter key pada input URL
-    document.getElementById('gasUrl').addEventListener('keydown', e => {
-      if (e.key === 'Enter') bukaCBT();
-    });
+
   </script>
 </body>
 </html>
