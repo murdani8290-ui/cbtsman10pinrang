@@ -3,28 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CBT Online">
   <meta name="theme-color" id="metaThemeColor" content="#0ea5e9">
   <title>CBT Online</title>
 
   <!-- PWA Manifest -->
   <link rel="manifest" href="manifest.json">
 
-  <!-- Android Chrome install hints -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="application-name" content="CBT Online">
-
-  <!-- Apple iOS -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="CBT Online">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <link rel="apple-touch-icon" sizes="512x512" href="icons/icon-512.png">
-
-  <!-- Microsoft -->
-  <meta name="msapplication-TileImage" content="icons/icon-192.png">
-  <meta name="msapplication-TileColor" content="#020617">
-
   <!-- Apple Touch Icons -->
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -642,8 +632,8 @@
 
       <!-- Status -->
       <div class="status-bar">
-        <div class="status-dot online" id="statusDot"></div>
-        <span id="statusText">Terhubung ke internet</span>
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">Memeriksa koneksi...</span>
       </div>
 
       <!-- GAS URL tersembunyi -->
@@ -685,8 +675,8 @@
 
       <!-- Footer -->
       <div class="footer">
-        Dikembangkan oleh <strong style="color:var(--accent)">Murdani</strong> &copy; 2025<br>
-        <span id="pwaStatus" style="font-size:0.6rem;opacity:0.5">Versi Web</span>
+        CBT Online PWA &copy; <span id="yr"></span> • 
+        <span id="pwaStatus">Versi Web</span>
       </div>
 
     </div>
@@ -699,7 +689,7 @@
     document.getElementById('yr').textContent = new Date().getFullYear();
 
     // Load saved data
-    const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycby-duTKMdW11zFDlai7HRSo7YDF2nbV6fdQPl4h3dRdrFGjRL6cgNJ3zinbHrV42oZTiQ/exec';
+    const DEFAULT_GAS_URL = 'https://script.google.com/macros/s/AKfycbzZK-nhRLigUP42gKx6bwEDvkHK8zvOEJmrmhsVu1lsb4R2UheC6o-O7rqYaXxwwAqrhA/exec';
     const savedUrl   = localStorage.getItem('cbt_gas_url') || DEFAULT_GAS_URL;
     const savedTheme = localStorage.getItem('cbt_theme') || '';
     const savedColor = localStorage.getItem('cbt_theme_color') || '#0ea5e9';
@@ -729,31 +719,9 @@
       }
     }
 
-    // Jalankan langsung saat halaman dimuat
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', updateOnlineStatus);
-    } else {
-      updateOnlineStatus();
-    }
-
-    // Update saat status berubah
+    updateOnlineStatus();
     window.addEventListener('online', updateOnlineStatus);
     window.addEventListener('offline', updateOnlineStatus);
-
-    // Ping berkala setiap 5 detik untuk pastikan status akurat
-    setInterval(() => {
-      const dot  = document.getElementById('statusDot');
-      const text = document.getElementById('statusText');
-      fetch('./manifest.json', { method: 'HEAD', cache: 'no-cache' })
-        .then(() => {
-          dot.className = 'status-dot online';
-          text.textContent = 'Terhubung ke internet';
-        })
-        .catch(() => {
-          dot.className = 'status-dot offline';
-          text.textContent = 'Tidak ada koneksi internet';
-        });
-    }, 5000);
 
     // =============================================
     // THEME SELECTOR
